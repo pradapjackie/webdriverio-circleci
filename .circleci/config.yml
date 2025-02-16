@@ -1,28 +1,38 @@
 version: 2.1
 
-jobs:
-  build-and-test:
+executors:
+  webdriverio-executor:
     docker:
-      - image: cimg/node:18.16-browsers # Use a Node.js image with browsers
+      - image: circleci/python:3.8  # You can use any base image that suits your environment
+    working_directory: ~/project
 
+jobs:
+  setup:
+    docker:
+      - image: circleci/python:3.8
     steps:
       - checkout
-
-      - restore_cache: # Cache node_modules
-          keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
       - run:
           name: Install dependencies
-          command: npm install
+          command: |
+            npm install
+            npm install --save-dev @wdio/cli
+            npx wdio config
 
+  test:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout
       - run:
-          name: Run tests
-          command: npm run wdio
+          name: Run WebDriverIO Tests
+          command: npx wdio run wdio.conf.js
 
 workflows:
-  build-and-test-workflow:
+  version: 2
+  test:
     jobs:
-      - build-and-test
+      - setup
+      - test:
+          requires:
+            - setup
