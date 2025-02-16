@@ -3,13 +3,13 @@ version: 2.1
 executors:
   webdriverio-executor:
     docker:
-      - image: circleci/python:3.8  # You can use any base image that suits your environment
+      - image: circleci/node:16  # Node.js image with npm preinstalled
     working_directory: ~/project
 
 jobs:
   setup:
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/node:16  # Node.js image
     steps:
       - checkout
       - run:
@@ -21,7 +21,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/node:16
     steps:
       - checkout
       - run:
