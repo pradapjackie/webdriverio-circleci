@@ -20,7 +20,7 @@ jobs:
 
       - run:
           name: Run tests
-          command: npm test # Or your test command (e.g., npx jest)
+          command: npm run wdio
 
 workflows:
   build-and-test-workflow:
