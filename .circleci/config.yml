@@ -21,7 +21,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:16  # Node 16 image
+      - image: circleci/node:18  # Node 16 image
     steps:
       - checkout
       - run:
