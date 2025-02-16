@@ -1,29 +1,53 @@
 version: 2.1
 
 jobs:
-  build:
+  build-and-test:
     docker:
-      - image: circleci/circleci-cli@0.1.9
+      - image: cimg/node:16.14-browsers # Use a Node.js image with browsers
+
     steps:
       - checkout
+
+      - restore_cache: # Cache node_modules
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
       - run:
-          name: Install npm dependencies
+          name: Install dependencies
           command: npm install
+
+      - save_cache: # Save node_modules
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+
       - run:
-          name: Install Google Chrome
+          name: Run tests
+          command: npm test # Or your test command (e.g., npx jest)
+
+      - run:
+          name: Generate Allure report (if using Allure)
+          command: allure generate
+
+      - store_artifacts: # Store test reports (adjust paths)
+          path: reports # Example path for Jest HTML reporter
+          when: always # Store even if tests fail
+
+      - store_artifacts: # Store Allure report (if using Allure)
+          path: allure-report
+          when: always
+
+      - run: # Only if you want to deploy Allure report to Github pages
+          name: Deploy Allure report to GitHub Pages
           command: |
-            sudo apt-get update
-            sudo apt-get install -y wget gnupg2
-            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-            echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-            sudo apt-get update
-            sudo apt-get install -y google-chrome-stable
-      - run:
-          name: Run WebdriverIO Tests
-          command: npx wdio run wdio.conf.js
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then # Deploy only on main branch
+              npm install -g gh-pages
+              allure-github-pages --owner <YOUR_GITHUB_USERNAME> --repo <YOUR_GITHUB_REPO> --branch gh-pages
+            fi
 
 workflows:
-  version: 2
-  build_and_test:
+  build-and-test-workflow:
     jobs:
-      - build
+      - build-and-test
