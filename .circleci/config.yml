@@ -1,26 +1,19 @@
 version: 2.1
-
+orbs:
+  circleci-cli: circleci/circleci-cli@0.1.9
 jobs:
-  build-and-test:
+  build:
     docker:
-      - image: cimg/node:18.16-browsers # Or cimg/node:lts-browsers (preferred)
-
+      - image: cypress/browsers:node18.6.0-chrome105-ff104
+    working_directory: ~/repo
     steps:
       - checkout
-      - run:
-          name: Check Node.js version (CRITICAL!)
-          command: node -v  # This will print the Node.js version in the logs
+      # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-      - run:
-          name: Install dependencies
-          command: npm install
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package-lock.json" }}
-      - run:
-          name: Run tests
-          command: npm run wdio
+
+      - run: npm ci
+      - run: npm run wdio
