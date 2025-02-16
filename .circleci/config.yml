@@ -1,38 +1,26 @@
 version: 2.1
 
-executors:
-  webdriverio-executor:
-    docker:
-      - image: circleci/node:16  # Ensure you're using Node 16 or higher
-    working_directory: ~/project
-
 jobs:
-  setup:
+  build-and-test:
     docker:
-      - image: circleci/node:16  # Node 16 image
+      - image: cimg/node:18.16-browsers # Or cimg/node:lts-browsers (preferred)
+
     steps:
       - checkout
+      - run:
+          name: Check Node.js version (CRITICAL!)
+          command: node -v  # This will print the Node.js version in the logs
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
       - run:
           name: Install dependencies
-          command: |
-            npm install
-            npm install --save-dev @wdio/cli
-            npx wdio config
-
-  test:
-    docker:
-      - image: circleci/node:18  # Node 16 image
-    steps:
-      - checkout
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
       - run:
-          name: Run WebDriverIO Tests
+          name: Run tests
           command: npm run wdio
-
-workflows:
-  version: 2
-  test:
-    jobs:
-      - setup
-      - test:
-          requires:
-            - setup
