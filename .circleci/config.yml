@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-and-test:
     docker:
-      - image: cimg/node:16.14-browsers # Use a Node.js image with browsers
+      - image: cimg/node:18.16-browsers # Use a Node.js image with browsers
 
     steps:
       - checkout
