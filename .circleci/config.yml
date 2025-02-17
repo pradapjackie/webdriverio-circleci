@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   test:
     docker:
-      - image: pradapjackie/webdriverio-firefox:latest
+      - image: pradapjackie/webdriverio-firefox-amd64:latest
     steps:
       - checkout
       - run:
