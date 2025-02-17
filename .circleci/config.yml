@@ -20,7 +20,7 @@ jobs:
           command: npm install
       - run:
           name: Test
-          command: npm test wdio.conf.js
+          command: npm run wdio
       - store_test_results:
           path: report
 workflows:
