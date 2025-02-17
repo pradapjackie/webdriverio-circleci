@@ -16,5 +16,8 @@
     "@wdio/mocha-framework": "^9.9.0",
     "wdio-chromedriver-service": "^8.1.1",
     "webdriverio": "^7.40.0"
+  },
+  "dependencies": {
+    "@wdio/globals": "^9.0.7"
   }
 }
