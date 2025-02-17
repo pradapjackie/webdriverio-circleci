@@ -1,19 +1,27 @@
 version: 2.1
-orbs:
-  circleci-cli: circleci/circleci-cli@0.1.9
-jobs:
-  build:
+
+executors:
+  selenium-executor:
     docker:
-      - image: cypress/browsers:node18.6.0-chrome105-ff104
-    working_directory: ~/repo
+      - image: webdriverio/selenium-standalone
+    working_directory: ~/project
+
+jobs:
+  test:
+    executor: selenium-executor
     steps:
       - checkout
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+      - run:
+          name: Install Dependencies
+          command: |
+            npm ci
+      - run:
+          name: Run WebDriverIO Tests
+          command: |
+            npx wdio run wdio.conf.js
 
-      - run: npm i
-      - run: npm run wdio
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
