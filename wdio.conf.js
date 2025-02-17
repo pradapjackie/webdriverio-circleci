@@ -6,10 +6,17 @@ exports.config = {
     exclude: [],
     maxInstances: 10,
     capabilities: [{
-        browserName: 'chrome',
-        'goog:chromeOptions': {
-            args: ['--headless', '--disable-gpu', '--window-size=1280,800']
-        }
+        browserName: 'firefox', // Use Firefox
+        'moz:firefoxOptions': {  // Firefox-specific options
+            args: [
+                '--headless', // Headless mode
+                '--window-size=1280,800' // Window size
+                // Add other Firefox-specific arguments as needed
+            ],
+            // ... other options ...
+            binary: '/usr/bin/firefox-esr' // Path to Firefox executable
+
+        },
     }],
     logLevel: 'info',
     bail: 0,

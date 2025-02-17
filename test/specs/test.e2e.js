@@ -1,8 +1,6 @@
 const { expect } = require('@wdio/globals')
 
 
-// test/specs/saucedemo-login.spec.js
-
 describe('SauceDemo Login Page', () => {
     it('should allow valid login and display products page', async () => {
         // Navigate to SauceDemo
